@@ -191,6 +191,11 @@ install_wordpress(){
 	choices
 }
 
+##############################################
+# Setup virtual host 
+# Usage: 
+# setup_config
+##############################################
 
 setup_config(){
 	echo "	###############################
@@ -219,9 +224,29 @@ setup_config(){
 	
 }
 
+##########################################
+# Delete Setup virtual host 
+# Usage: 
+# delete_setup
+##########################################
+
+delete_setup(){
+	read -p "Enter username to be deleted: " username
+	read -p "Delete user folder?(You can't restore after delete) [y/N]" delete
+	
+	if [ "$delete" == "y" ] || [ "$delete" == "Y" ]; then 
+		rm -rf /home/$username
+	fi
+	
+	rm -rf /etc/nginx/conf.d/$username.conf 
+	rm -rf /etc/php/7.1/fpm/pool.d/$username.conf
+	systemctl reload nginx && systemctl reload php7.1-fpm	
+}
+
 #########################################
 # Vagran config 
 #########################################
+
 vagrant_conf(){
 	apt-get install -y sudo build-essential module-assistant
 	if [ -z "$(getent passwd vagrant)" ]; then 
@@ -261,8 +286,9 @@ Please select your instalation
 3. NodeJS
 4. PHP 7.1 + Composer
 5. Install / Update wordpress
-6. Add new virtualhost
+6. Add new virtual host
 7. Setup vagrant user
+8. Delete virtual host 
 #. Exit
 "
 read -p "Select your choice [#]: " choice 
@@ -298,6 +324,12 @@ case "$choice" in
 		vagrant_conf
 		choices
 		;;
+		
+	8) echo "Delete virtual host"	
+		delete_setup
+		choices
+		;;
+		
 	99) echo "Test"		
 		testconfig
 		;;
