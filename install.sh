@@ -236,6 +236,9 @@ delete_setup(){
 	
 	if [ "$delete" == "y" ] || [ "$delete" == "Y" ]; then 
 		rm -rf /home/$username
+		if [ "$username" != "nginx" ]; then 
+			userdel $username
+		fi
 	fi
 	
 	rm -rf /etc/nginx/conf.d/$username.conf 
